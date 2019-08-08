@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+
+use App\Lib\Transformer;
+use App\Lib\TransformerSerializer;
+use App\Transformers\TestTransformer;
+use League\Fractal\Manager;
+use League\Fractal\Resource\Collection;
 
 class AuthController extends Controller
 {
@@ -39,6 +44,12 @@ class AuthController extends Controller
      */
     public function me()
     {
+        $t=new Transformer();
+        $res = (new Transformer())->createData(new Collection([], new TestTransformer()))->toArray();
+        return $res;
+//        $response = (new Manager())
+//            ->setSerializer(new TransformSerializer())
+//            ->createData(new Collection($videos, new VideoTransformers()))->toArray();
         return response()->json(auth('jwt')->user());
     }
 

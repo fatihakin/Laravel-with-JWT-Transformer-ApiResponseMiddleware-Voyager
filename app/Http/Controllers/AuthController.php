@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 
+use App\Lib\ApiResponse;
 use App\Lib\Transformer;
-use App\Lib\TransformerSerializer;
-use App\Transformers\TestTransformer;
-use League\Fractal\Manager;
+use App\Lib\TransformSerializer;
+use App\Transformers\EducationHistoryTransformer;
+use App\Transformers\FollowTransformer;
+use App\Transformers\JwtTransformer;
+use App\Transformers\MessageTransformer;
+use App\Transformers\UserTransformer;
 use League\Fractal\Resource\Collection;
+use League\Fractal\Resource\Item;
 
 class AuthController extends Controller
 {
@@ -24,45 +29,41 @@ class AuthController extends Controller
     /**
      * Get a JWT via given credentials.
      *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function login()
     {
         $credentials = request(['email', 'password']);
 
-        if (! $token = auth('jwt')->setTTL(60*60*24*7*52)->attempt($credentials)) {
+        if (!$token = auth('jwt')->setTTL(60 * 60 * 24 * 7 * 52)->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token);
+        $transformer = (new Transformer())->createData(new Item(['token' => $token], new JwtTransformer()));
+        return new ApiResponse($transformer->toArray());
     }
 
-    /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function me()
     {
-        $t=new Transformer();
-        $res = (new Transformer())->createData(new Collection([], new TestTransformer()))->toArray();
-        return $res;
-//        $response = (new Manager())
-//            ->setSerializer(new TransformSerializer())
-//            ->createData(new Collection($videos, new VideoTransformers()))->toArray();
-        return response()->json(auth('jwt')->user());
+        $user = auth('jwt')->user();
+        $transformer = (new Transformer())
+            ->createData(new Item($user, new UserTransformer()));
+
+        return new ApiResponse(
+            $transformer->toArray()
+        );
+
     }
 
-    /**
-     * Log the user out (Invalidate the token).
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function logout()
     {
         auth('jwt')->logout();
+        $transformer = (new Transformer())
+            ->createData(new Collection(['Successfully logged out'], new MessageTransformer()));
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return new ApiResponse(
+            $transformer->toArray()
+        );
     }
 
     /**
@@ -78,7 +79,7 @@ class AuthController extends Controller
     /**
      * Get the token array structure.
      *
-     * @param  string $token
+     * @param string $token
      *
      * @return \Illuminate\Http\JsonResponse
      */

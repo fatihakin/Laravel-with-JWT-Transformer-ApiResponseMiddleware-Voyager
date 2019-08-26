@@ -24,21 +24,17 @@ class ApiResponseMiddleware
             if (isset($response->exception)) {
                 if ($response->exception instanceof ApiExceptionAbstract) {
                     $apiExceptionAbstract = $response->exception;
-                    $transformer = (new Transformer())
-                        ->createData(new Item($apiExceptionAbstract, new ExceptionTransformer()));
-
-                    return Response::create(
-                        $transformer->toArray(), $apiExceptionAbstract->getStatusCode());
+                    $apiExceptionAbstract->exception = $response->exception;
                 } else {
-                    $internalServerError = new InternalServerErrorException();
-                    $internalServerError->setMessages(['Bir hata oluştu...']);
-                    $internalServerError->exception = $response->exception;
-                    $transformer = (new Transformer())
-                        ->createData(new Item($internalServerError, new ExceptionTransformer()));
-
-                    return Response::create(
-                        $transformer->toArray(), $internalServerError->getStatusCode());
+                    $apiExceptionAbstract = new InternalServerErrorException();
+                    $apiExceptionAbstract->setMessages(['Bir hata oluştu...']);
+                    $apiExceptionAbstract->exception = $response->exception;
                 }
+                $transformer = (new Transformer())
+                    ->createData(new Item($apiExceptionAbstract, new ExceptionTransformer()));
+
+                return Response::create(
+                    $transformer->toArray(), $apiExceptionAbstract->getStatusCode());
             }
 
             $apiResponse = $this->getApiResponse($response);

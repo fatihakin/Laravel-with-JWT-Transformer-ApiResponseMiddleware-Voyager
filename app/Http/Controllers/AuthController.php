@@ -47,7 +47,8 @@ class AuthController extends Controller
 
     public function me()
     {
-        $user = auth('jwt')->user();
+//        throw (new NotFoundException())->setMessages(['mesaj 1', 'mesaj 2']);
+        $user = auth('jwt')->users();
         $transformer = (new Transformer())
             ->createData(new Item($user, new UserTransformer()));
 

@@ -44,22 +44,4 @@ abstract class ApiExceptionAbstract extends \Exception {
         $this->messages = $messages;
         return $this;
     }
-
-
-
-    public function getResponse()
-    {
-        $data = [
-            'status_code'	 => $this->getStatusCode(),
-            'status_key'	 => $this->getStatusKey(),
-            'messages'		 => $this->getMessages(),
-        ];
-
-        $transformer = (new Transformer())
-            ->createData(new Item( $this ,new ExceptionTransformer()));
-
-        return Response::create(
-            $transformer->toArray(),$this->getStatusCode());
-    }
-
 }

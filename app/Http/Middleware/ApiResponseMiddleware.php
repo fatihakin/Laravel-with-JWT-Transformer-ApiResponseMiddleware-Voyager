@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use App\APILog;
 use App\Lib\APIErrorResponseAbstract;
-use App\Lib\APIException\DefaultException;
+use App\Lib\APIException\InternalServerErrorException;
 use App\Lib\ApiExceptionAbstract;
 use App\Lib\ApiResponse;
 use App\Lib\Transformer;
@@ -30,14 +30,14 @@ class ApiResponseMiddleware
                     return Response::create(
                         $transformer->toArray(), $apiExceptionAbstract->getStatusCode());
                 } else {
-                    $defaultException = new DefaultException();
-                    $defaultException->setMessages(['Bir hata oluştu...']);
-                    $defaultException->exception = $response->exception;
+                    $internalServerError = new InternalServerErrorException();
+                    $internalServerError->setMessages(['Bir hata oluştu...']);
+                    $internalServerError->exception = $response->exception;
                     $transformer = (new Transformer())
-                        ->createData(new Item($defaultException, new ExceptionTransformer()));
+                        ->createData(new Item($internalServerError, new ExceptionTransformer()));
 
                     return Response::create(
-                        $transformer->toArray(), $defaultException->getStatusCode());
+                        $transformer->toArray(), $internalServerError->getStatusCode());
                 }
             }
 

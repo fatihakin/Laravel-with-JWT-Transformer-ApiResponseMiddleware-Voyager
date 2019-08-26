@@ -5,7 +5,7 @@ namespace App\Lib\APIException;
 
 use App\Lib\ApiExceptionAbstract;
 
-class DefaultException extends ApiExceptionAbstract {
+class InternalServerErrorException extends ApiExceptionAbstract {
 
     public function getStatusKey()
     {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Lib\APIException\NotFoundException;
 use App\Lib\ApiResponse;
 use App\Lib\Transformer;
 use App\Lib\TransformSerializer;
@@ -38,6 +39,7 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+
         $transformer = (new Transformer())->createData(new Item(['token' => $token], new JwtTransformer()));
         return new ApiResponse($transformer->toArray());
     }
@@ -45,7 +47,8 @@ class AuthController extends Controller
 
     public function me()
     {
-        $user = auth('jwt')->user();
+//        throw (new NotFoundException())->setMessages(['mesaj 1', 'mesaj 2']);
+        $user = auth('jwt')->users();
         $transformer = (new Transformer())
             ->createData(new Item($user, new UserTransformer()));
 

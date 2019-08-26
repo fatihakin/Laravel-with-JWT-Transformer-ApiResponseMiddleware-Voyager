@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 
-use App\Lib\APIException\NotFoundException;
 use App\Lib\ApiResponse;
 use App\Lib\Transformer;
 use App\Lib\TransformSerializer;

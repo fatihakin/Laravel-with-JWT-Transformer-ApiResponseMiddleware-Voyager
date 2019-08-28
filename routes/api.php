@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ApiAuthMiddleware;
 use App\Http\Middleware\ApiResponseMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,7 +25,7 @@ Route::group([
 ], function () {
     Route::post('login', 'AuthController@login');
     Route::group([
-        'middleware' => 'auth:jwt'
+        'middleware' => [ApiAuthMiddleware::class]
     ], function () {
         Route::get('me', 'AuthController@me');
         Route::get('logout', 'AuthController@logout');

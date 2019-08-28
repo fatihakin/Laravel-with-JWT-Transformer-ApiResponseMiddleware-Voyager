@@ -38,7 +38,6 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-
         $transformer = (new Transformer())->createData(new Item(['token' => $token], new JwtTransformer()));
         return new ApiResponse($transformer->toArray());
     }
